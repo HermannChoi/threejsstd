@@ -1,95 +1,72 @@
-import Image from "next/image";
+"use client";
+
+import { Canvas, useFrame } from "@react-three/fiber";
 import styles from "./page.module.css";
+import * as THREE from "three";
+import {
+  CameraControls,
+  Environment,
+  PerspectiveCamera,
+  SpotLight,
+  Text,
+} from "@react-three/drei";
+import { useRef } from "react";
+
+// Mesh 컴포넌트를 별도로 정의
+function RotatingMesh() {
+  const meshRef = useRef();
+
+  useFrame(() => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += 0.01;
+      meshRef.current.rotation.y += 0.01;
+      // meshRef.current.rotation.z += 0.01;
+    }
+  });
+
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const materials =
+    // [
+    // new THREE.MeshBasicMaterial({ color: "#202020" }), // 앞면
+    // new THREE.MeshBasicMaterial({ color: "#202020" }), // 뒷면
+    // new THREE.MeshBasicMaterial({ color: "#505050" }), // 위쪽
+    // new THREE.MeshBasicMaterial({ color: "#505050" }), // 아래쪽
+    // new THREE.MeshBasicMaterial({ color: "#808080" }), // 오른쪽
+    new THREE.MeshBasicMaterial({ color: "#808080" }); // 왼쪽
+  // ];
+
+  return (
+    <>
+      <SpotLight
+        color="white"
+        intensity={0.8}
+        position={[0, 10, 0]}
+        angle={0.3}
+        penumbra={0.1}
+        castShadow
+      />
+      <mesh ref={meshRef} geometry={geometry} material={materials}></mesh>
+    </>
+  );
+}
 
 export default function Home() {
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+      <h1>Threejs Study</h1>
+      <section id="canvas_container" className={styles.canvas_container}>
+        <Canvas>
+          <CameraControls minPolarAngle={0} maxPolarAngle={Math.PI * 2} />
+          {/* <ambientLight intensity={Math.PI / 5} /> */}
+          {/* <directionalLight color="red" intensity={2} position={[-5, 5, 5]} /> */}
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+          <group scale={3} position={[0, 0, 0]}>
+            <RotatingMesh /> {/* RotatingMesh 컴포넌트를 호출 */}
+          </group>
+          {/* <Environment background preset="forest" blur={1} /> */}
+          <PerspectiveCamera makeDefault position={[10, 7, 0]} />
+        </Canvas>
+      </section>
     </main>
   );
 }
